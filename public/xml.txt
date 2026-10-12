@@ -1,0 +1,92 @@
+student.xml
+<?xml version="1.0"?>
+<!DOCTYPE student [
+    <!ELEMENT student (name, rollno, dept)>
+    <!ELEMENT name (#PCDATA)>
+    <!ELEMENT rollno (#PCDATA)>
+    <!ELEMENT dept (#PCDATA)>
+]>
+<student>
+    <name>Ganga</name>
+    <rollno>101</rollno>
+    <dept>IT</dept>
+</student>
+
+external dtd 
+<!ELEMENT student (name, rollno, dept)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT rollno (#PCDATA)>
+<!ELEMENT dept (#PCDATA)>
+
+<?xml version="1.0"?>
+<!DOCTYPE student SYSTEM "student.dtd">
+<student>
+    <name>Ganga</name>
+    <rollno>101</rollno>
+    <dept>IT</dept>
+</student>
+
+student.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="student.xsl"?>
+<!DOCTYPE student SYSTEM "student.dtd">
+<student id="101">
+    <name>Arun</name>
+    <age>20</age>
+    <department>IT</department>
+    <email>arun@example.com</email>
+</student>
+
+///another example
+<!ELEMENT student (name, age, department, email)>
+<!ATTLIST student id CDATA #REQUIRED>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT age (#PCDATA)>
+<!ELEMENT department (#PCDATA)>
+<!ELEMENT email (#PCDATA)>
+
+table format
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="student">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="age" type="xs:integer"/>
+                <xs:element name="department" type="xs:string"/>
+                <xs:element name="email" type="xs:string"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:integer"
+                          use="required"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:template match="/">
+        <html>
+            <body>
+                <h2>Student Details</h2>
+                <table border="1">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Department</th>
+                        <th>Email</th>
+                    </tr>
+                    <tr>
+                        <td><xsl:value-of select="student/@id"/></td>
+                        <td><xsl:value-of select="student/name"/></td>
+                        <td><xsl:value-of select="student/age"/></td>
+                        <td><xsl:value-of select="student/department"/></td>
+                        <td><xsl:value-of select="student/email"/></td>
+                    </tr>
+                </table>
+            </body>
+        </html>
+    </xsl:template>
+</xsl:stylesheet>

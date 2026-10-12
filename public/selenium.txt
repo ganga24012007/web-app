@@ -1,0 +1,39 @@
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class StudentTest {
+    public static void main(String[] args) {
+
+        WebDriver driver = new ChromeDriver();
+
+        driver.get("http://localhost:3000/students");
+
+        driver.findElement(By.id("name"))
+              .sendKeys("Ganga");
+
+        driver.findElement(By.id("regno"))
+              .sendKeys("101");
+
+        driver.findElement(By.id("dept"))
+              .sendKeys("IT");
+
+        driver.findElement(By.id("addBtn"))
+              .click();
+
+        String table =
+            driver.findElement(By.id("studentTable"))
+                  .getText();
+
+        System.out.println(table);
+
+        if (table.contains("Ganga")) {
+            System.out.println("Student test passed");
+        } else {
+            System.out.println("Student test failed");
+        }
+
+        driver.quit();
+    }
+}
