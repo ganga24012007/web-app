@@ -1,0 +1,351 @@
+XML   --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="college.xsl"?>
+
+<!DOCTYPE college SYSTEM "college.dtd">
+
+<college collegeId="C101"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="college.xsd">
+
+    <collegeName>ABC Engineering College</collegeName>
+
+    <location city="Madurai" state="Tamil Nadu"/>
+
+    <students>
+        <student id="S101" year="3">
+            <name>
+                <firstName>Arun</firstName>
+                <lastName>Kumar</lastName>
+            </name>
+            <age>20</age>
+            <department>IT</department>
+            <email>arun@example.com</email>
+            <skills>
+                <skill>Java</skill>
+                <skill>XML</skill>
+                <skill>SQL</skill>
+            </skills>
+            <active>true</active>
+        </student>
+
+        <student id="S102" year="2">
+            <name>
+                <firstName>Priya</firstName>
+                <lastName>Ravi</lastName>
+            </name>
+            <age>19</age>
+            <department>CSE</department>
+            <email>priya@example.com</email>
+            <skills>
+                <skill>Python</skill>
+                <skill>HTML</skill>
+            </skills>
+            <active>true</active>
+        </student>
+    </students>
+
+    <courses>
+        <course code="CS101">
+            <title>Programming in Java</title>
+            <credits>4</credits>
+        </course>
+
+        <course code="IT201">
+            <title>Web Technology</title>
+            <credits>3</credits>
+        </course>
+    </courses>
+
+    <description>Learning XML &amp; Web Technology</description>
+
+    <note><![CDATA[Use <tag> to represent a sample XML tag.]]></note>
+
+</college>
+---------------------------------------------------------------------------
+
+DTD
+
+<!ELEMENT college (collegeName, location, students, courses, description, note)>
+
+<!ATTLIST college
+    collegeId CDATA #REQUIRED
+    xmlns:xsi CDATA #IMPLIED
+    xsi:noNamespaceSchemaLocation CDATA #IMPLIED
+>
+
+
+<!ELEMENT collegeName (#PCDATA)>
+
+<!ELEMENT location EMPTY>
+<!ATTLIST location
+    city CDATA #REQUIRED
+    state CDATA #REQUIRED
+>
+
+<!ELEMENT students (student+)>
+
+<!ELEMENT student (name, age, department, email, skills, active)>
+<!ATTLIST student
+    id CDATA #REQUIRED
+    year CDATA #REQUIRED
+>
+
+<!ELEMENT name (firstName, lastName)>
+<!ELEMENT firstName (#PCDATA)>
+<!ELEMENT lastName (#PCDATA)>
+
+<!ELEMENT age (#PCDATA)>
+<!ELEMENT department (#PCDATA)>
+<!ELEMENT email (#PCDATA)>
+
+<!ELEMENT skills (skill+)>
+<!ELEMENT skill (#PCDATA)>
+
+<!ELEMENT active (#PCDATA)>
+
+<!ELEMENT courses (course+)>
+
+<!ELEMENT course (title, credits)>
+<!ATTLIST course code CDATA #REQUIRED>
+
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT credits (#PCDATA)>
+
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT note (#PCDATA)>
+--------------------------------------------------------------
+XSD
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="college">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="collegeName" type="xs:string"/>
+
+                <xs:element name="location">
+                    <xs:complexType>
+                        <xs:attribute name="city"
+                                      type="xs:string"
+                                      use="required"/>
+                        <xs:attribute name="state"
+                                      type="xs:string"
+                                      use="required"/>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="students">
+                    <xs:complexType>
+                        <xs:sequence>
+
+                            <xs:element name="student"
+                                        minOccurs="1"
+                                        maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+
+                                        <xs:element name="name">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="firstName"
+                                                                type="xs:string"/>
+                                                    <xs:element name="lastName"
+                                                                type="xs:string"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+
+                                        <xs:element name="age"
+                                                    type="xs:integer"/>
+                                        <xs:element name="department"
+                                                    type="xs:string"/>
+                                        <xs:element name="email"
+                                                    type="xs:string"/>
+
+                                        <xs:element name="skills">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="skill"
+                                                                type="xs:string"
+                                                                minOccurs="1"
+                                                                maxOccurs="unbounded"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+
+                                        <xs:element name="active"
+                                                    type="xs:boolean"/>
+
+                                    </xs:sequence>
+
+                                    <xs:attribute name="id"
+                                                  type="xs:string"
+                                                  use="required"/>
+                                    <xs:attribute name="year"
+                                                  type="xs:integer"
+                                                  use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="courses">
+                    <xs:complexType>
+                        <xs:sequence>
+
+                            <xs:element name="course"
+                                        minOccurs="1"
+                                        maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="title"
+                                                    type="xs:string"/>
+                                        <xs:element name="credits"
+                                                    type="xs:integer"/>
+                                    </xs:sequence>
+
+                                    <xs:attribute name="code"
+                                                  type="xs:string"
+                                                  use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="description" type="xs:string"/>
+                <xs:element name="note" type="xs:string"/>
+
+            </xs:sequence>
+
+            <xs:attribute name="collegeId"
+                          type="xs:string"
+                          use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
+-------------------------------------------------------------------------------
+XSL
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+    <xsl:template match="/">
+
+        <html>
+            <head>
+                <title>College Details</title>
+            </head>
+
+            <body>
+                <h1>College Details</h1>
+
+                <h2>College Information</h2>
+
+                <p>
+                    <b>College ID: </b>
+                    <xsl:value-of select="college/@collegeId"/>
+                </p>
+
+                <p>
+                    <b>College Name: </b>
+                    <xsl:value-of select="college/collegeName"/>
+                </p>
+
+                <p>
+                    <b>City: </b>
+                    <xsl:value-of select="college/location/@city"/>
+                </p>
+
+                <p>
+                    <b>State: </b>
+                    <xsl:value-of select="college/location/@state"/>
+                </p>
+
+                <h2>Student Details</h2>
+
+                <table border="1" cellpadding="8">
+                    <tr>
+                        <th>ID</th>
+                        <th>Year</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Age</th>
+                        <th>Department</th>
+                        <th>Email</th>
+                        <th>Skills</th>
+                        <th>Active</th>
+                    </tr>
+
+                    <xsl:for-each select="college/students/student">
+                        <tr>
+                            <td><xsl:value-of select="@id"/></td>
+                            <td><xsl:value-of select="@year"/></td>
+                            <td><xsl:value-of select="name/firstName"/></td>
+                            <td><xsl:value-of select="name/lastName"/></td>
+                            <td><xsl:value-of select="age"/></td>
+                            <td><xsl:value-of select="department"/></td>
+                            <td><xsl:value-of select="email"/></td>
+
+                            <td>
+                                <xsl:for-each select="skills/skill">
+                                    <xsl:value-of select="."/>
+
+                                    <xsl:if test="position() != last()">
+                                        <xsl:text>, </xsl:text>
+                                    </xsl:if>
+                                </xsl:for-each>
+                            </td>
+
+                            <td><xsl:value-of select="active"/></td>
+                        </tr>
+                    </xsl:for-each>
+
+                </table>
+
+                <h2>Course Details</h2>
+
+                <table border="1" cellpadding="8">
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Title</th>
+                        <th>Credits</th>
+                    </tr>
+
+                    <xsl:for-each select="college/courses/course">
+                        <tr>
+                            <td><xsl:value-of select="@code"/></td>
+                            <td><xsl:value-of select="title"/></td>
+                            <td><xsl:value-of select="credits"/></td>
+                        </tr>
+                    </xsl:for-each>
+
+                </table>
+
+                <h2>Description</h2>
+                <p>
+                    <xsl:value-of select="college/description"/>
+                </p>
+
+                <h2>Note</h2>
+                <p>
+                    <xsl:value-of select="college/note"/>
+                </p>
+
+            </body>
+        </html>
+
+    </xsl:template>
+
+</xsl:stylesheet>
+-------------------------------------------------------------------------------------

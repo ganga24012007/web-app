@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="college.xsl"?>
+<!DOCTYPE college SYSTEM "college.dtd">
+
+<college collegeId="C101"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="college.xsd">
+
+    <collegeName>ABC Engineering College</collegeName>
+
+    <location city="Madurai" state="Tamil Nadu"/>
+
+    <students>
+        <student id="S101" year="3">
+            <name>
+                <firstName>Arun</firstName>
+                <lastName>Kumar</lastName>
+            </name>
+            <age>20</age>
+            <department>IT</department>
+            <email>arun@example.com</email>
+            <skills>
+                <skill>Java</skill>
+                <skill>XML</skill>
+                <skill>SQL</skill>
+            </skills>
+            <active>true</active>
+        </student>
+
+        <student id="S102" year="2">
+            <name>
+                <firstName>Priya</firstName>
+                <lastName>Ravi</lastName>
+            </name>
+            <age>19</age>
+            <department>CSE</department>
+            <email>priya@example.com</email>
+            <skills>
+                <skill>Python</skill>
+                <skill>HTML</skill>
+            </skills>
+            <active>true</active>
+        </student>
+    </students>
+
+    <courses>
+        <course code="CS101">
+            <title>Programming in Java</title>
+            <credits>4</credits>
+        </course>
+
+        <course code="IT201">
+            <title>Web Technology</title>
+            <credits>3</credits>
+        </course>
+    </courses>
+
+    <description>Learning XML &amp; Web Technology</description>
+
+    <note><![CDATA[Use <tag> to represent a sample XML tag.]]></note>
+
+</college>

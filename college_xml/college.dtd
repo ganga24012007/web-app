@@ -1,0 +1,48 @@
+<!ELEMENT college (collegeName, location, students, courses, description, note)>
+
+<!ATTLIST college
+    collegeId CDATA #REQUIRED
+    xmlns:xsi CDATA #IMPLIED
+    xsi:noNamespaceSchemaLocation CDATA #IMPLIED
+>
+
+
+<!ELEMENT collegeName (#PCDATA)>
+
+<!ELEMENT location EMPTY>
+<!ATTLIST location
+    city CDATA #REQUIRED
+    state CDATA #REQUIRED
+>
+
+<!ELEMENT students (student+)>
+
+<!ELEMENT student (name, age, department, email, skills, active)>
+<!ATTLIST student
+    id CDATA #REQUIRED
+    year CDATA #REQUIRED
+>
+
+<!ELEMENT name (firstName, lastName)>
+<!ELEMENT firstName (#PCDATA)>
+<!ELEMENT lastName (#PCDATA)>
+
+<!ELEMENT age (#PCDATA)>
+<!ELEMENT department (#PCDATA)>
+<!ELEMENT email (#PCDATA)>
+
+<!ELEMENT skills (skill+)>
+<!ELEMENT skill (#PCDATA)>
+
+<!ELEMENT active (#PCDATA)>
+
+<!ELEMENT courses (course+)>
+
+<!ELEMENT course (title, credits)>
+<!ATTLIST course code CDATA #REQUIRED>
+
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT credits (#PCDATA)>
+
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT note (#PCDATA)>

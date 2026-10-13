@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="college">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="collegeName" type="xs:string"/>
+
+                <xs:element name="location">
+                    <xs:complexType>
+                        <xs:attribute name="city"
+                                      type="xs:string"
+                                      use="required"/>
+                        <xs:attribute name="state"
+                                      type="xs:string"
+                                      use="required"/>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="students">
+                    <xs:complexType>
+                        <xs:sequence>
+
+                            <xs:element name="student"
+                                        minOccurs="1"
+                                        maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+
+                                        <xs:element name="name">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="firstName"
+                                                                type="xs:string"/>
+                                                    <xs:element name="lastName"
+                                                                type="xs:string"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+
+                                        <xs:element name="age"
+                                                    type="xs:integer"/>
+                                        <xs:element name="department"
+                                                    type="xs:string"/>
+                                        <xs:element name="email"
+                                                    type="xs:string"/>
+
+                                        <xs:element name="skills">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="skill"
+                                                                type="xs:string"
+                                                                minOccurs="1"
+                                                                maxOccurs="unbounded"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+
+                                        <xs:element name="active"
+                                                    type="xs:boolean"/>
+
+                                    </xs:sequence>
+
+                                    <xs:attribute name="id"
+                                                  type="xs:string"
+                                                  use="required"/>
+                                    <xs:attribute name="year"
+                                                  type="xs:integer"
+                                                  use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="courses">
+                    <xs:complexType>
+                        <xs:sequence>
+
+                            <xs:element name="course"
+                                        minOccurs="1"
+                                        maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="title"
+                                                    type="xs:string"/>
+                                        <xs:element name="credits"
+                                                    type="xs:integer"/>
+                                    </xs:sequence>
+
+                                    <xs:attribute name="code"
+                                                  type="xs:string"
+                                                  use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="description" type="xs:string"/>
+                <xs:element name="note" type="xs:string"/>
+
+            </xs:sequence>
+
+            <xs:attribute name="collegeId"
+                          type="xs:string"
+                          use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
