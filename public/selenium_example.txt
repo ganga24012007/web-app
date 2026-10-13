@@ -1,0 +1,380 @@
+backend - server.js
+
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect("mongodb://127.0.0.1:27017/studentDB")
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.log("MongoDB error:", err.message));
+
+const Student = mongoose.model("Student", {
+    name: { type: String, required: true },
+    studentId: { type: String, required: true, unique: true },
+    dept: { type: String, required: true }
+});
+
+// Get all students or search
+app.get("/api/students", async (req, res) => {
+    try {
+        const search = req.query.search || "";
+        const filter = search ? {
+            $or: [
+                { name: { $regex: search, $options: "i" } },
+                { studentId: { $regex: search, $options: "i" } },
+                { dept: { $regex: search, $options: "i" } }
+            ]
+        } : {};
+
+        res.json(await Student.find(filter));
+    } catch (err) {
+        res.status(500).json({ error: "Unable to load students" });
+    }
+});
+
+// Add student
+app.post("/api/students", async (req, res) => {
+    try {
+        const student = await Student.create(req.body);
+        res.status(201).json(student);
+    } catch (err) {
+        res.status(400).json({ error: "Unable to add student. Check fields and ID." });
+    }
+});
+
+// Update student
+app.put("/api/students/:id", async (req, res) => {
+    try {
+        const student = await Student.findByIdAndUpdate(
+            req.params.id,
+            {
+                name: req.body.name,
+                studentId: req.body.studentId,
+                dept: req.body.dept
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!student) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+
+        res.json(student);
+    } catch (err) {
+        res.status(400).json({ error: "Unable to update student" });
+    }
+});
+
+// Delete student
+app.delete("/api/students/:id", async (req, res) => {
+    try {
+        const student = await Student.findByIdAndDelete(req.params.id);
+
+        if (!student) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+
+        res.json({ message: "Deleted successfully" });
+    } catch (err) {
+        res.status(400).json({ error: "Unable to delete student" });
+    }
+});
+
+app.listen(3000, () => {
+    console.log("Backend running at http://localhost:3000");
+});
+
+
+forntend -index.html
+
+<!DOCTYPE html>
+<html lang="en" ng-app="studentApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Management</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body ng-controller="StudentController">
+
+    <h2>Student Management System</h2>
+
+    <form ng-submit="saveStudent()">
+        <input id="studentName" type="text"
+               ng-model="form.name"
+               placeholder="Student Name" required>
+
+        <input id="studentId" type="text"
+               ng-model="form.studentId"
+               placeholder="Student ID" required>
+
+        <input id="department" type="text"
+               ng-model="form.dept"
+               placeholder="Department" required>
+
+        <button id="saveStudent" type="submit">
+            {{ form._id ? 'Update Student' : 'Add Student' }}
+        </button>
+
+        <button type="button" ng-click="cancelEdit()"
+                ng-if="form._id">Cancel</button>
+    </form>
+
+    <hr>
+
+    <input id="searchStudent" type="text"
+           ng-model="search"
+           ng-change="loadStudents()"
+           placeholder="Search students">
+
+    <button id="clearSearch"
+            ng-click="search=''; loadStudents()">
+        Clear Search
+    </button>
+
+    <h3>Student List</h3>
+
+    <table id="studentTable" border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Student ID</th>
+                <th>Department</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="s in students track by s._id">
+                <td>{{ s.name }}</td>
+                <td>{{ s.studentId }}</td>
+                <td>{{ s.dept }}</td>
+                <td>
+                    <button ng-click="editStudent(s)">Edit</button>
+                    <button ng-click="deleteStudent(s._id)">Delete</button>
+                </td>
+            </tr>
+
+            <tr ng-if="students.length === 0">
+                <td colspan="4">No students found</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p id="message">{{ message }}</p>
+
+    <script>
+        const app = angular.module("studentApp", []);
+
+        app.controller("StudentController", function($scope, $http) {
+            const API = "http://localhost:3000/api/students";
+
+            $scope.students = [];
+            $scope.form = {};
+            $scope.search = "";
+            $scope.message = "";
+
+            $scope.loadStudents = function() {
+                $http.get(API, {
+                    params: { search: $scope.search }
+                }).then(function(response) {
+                    $scope.students = response.data;
+                }).catch(function() {
+                    $scope.message = "Unable to load students";
+                });
+            };
+
+            $scope.saveStudent = function() {
+                let request;
+
+                if ($scope.form._id) {
+                    request = $http.put(
+                        API + "/" + $scope.form._id,
+                        $scope.form
+                    );
+                } else {
+                    request = $http.post(API, $scope.form);
+                }
+
+                request.then(function() {
+                    $scope.message = "Saved successfully";
+                    $scope.form = {};
+                    $scope.loadStudents();
+                }).catch(function(error) {
+                    $scope.message =
+                        error.data?.error || "Unable to save student";
+                });
+            };
+
+            $scope.editStudent = function(student) {
+                $scope.form = angular.copy(student);
+                $scope.message = "Editing " + student.name;
+            };
+
+            $scope.cancelEdit = function() {
+                $scope.form = {};
+                $scope.message = "";
+            };
+
+            $scope.deleteStudent = function(id) {
+                if (confirm("Delete this student?")) {
+                    $http.delete(API + "/" + id)
+                        .then(function() {
+                            $scope.message = "Deleted successfully";
+                            $scope.loadStudents();
+                        })
+                        .catch(function() {
+                            $scope.message = "Unable to delete student";
+                        });
+                }
+            };
+
+            $scope.loadStudents();
+        });
+    </script>
+</body>
+</html>
+
+selenium testing
+
+StudentSeleniumTest.java
+import java.time.Duration;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+public class StudentSeleniumTest {
+
+    public static void main(String[] args) {
+
+        WebDriver driver = new ChromeDriver();
+
+        WebDriverWait wait =
+            new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        By originalRow = By.xpath(
+            "//tr[td[normalize-space()='GangaTest']" +
+            " and td[normalize-space()='TEST101']]"
+        );
+
+        By updatedRow = By.xpath(
+            "//tr[td[normalize-space()='GangaUpdated']" +
+            " and td[normalize-space()='TEST101']]"
+        );
+
+        try {
+            // Open frontend
+            driver.get("http://localhost:5500");
+
+            System.out.println("Page: " + driver.getTitle());
+
+            // ADD
+            driver.findElement(By.id("studentName"))
+                  .sendKeys("GangaTest");
+
+            driver.findElement(By.id("studentId"))
+                  .sendKeys("TEST101");
+
+            driver.findElement(By.id("department"))
+                  .sendKeys("IT");
+
+            driver.findElement(By.id("saveStudent")).click();
+
+            wait.until(
+                ExpectedConditions.visibilityOfElementLocated(originalRow)
+            );
+
+            System.out.println("PASS: Add student");
+
+            // SEARCH
+            driver.findElement(By.id("searchStudent"))
+                  .sendKeys("GangaTest");
+
+            wait.until(
+                ExpectedConditions.visibilityOfElementLocated(originalRow)
+            );
+
+            System.out.println("PASS: Search student");
+
+            // Clear search
+            driver.findElement(By.id("clearSearch")).click();
+
+            // EDIT
+            WebElement row = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(originalRow)
+            );
+
+            row.findElement(
+                By.xpath("./td[4]//button[normalize-space()='Edit']")
+            ).click();
+
+            WebElement name =
+                driver.findElement(By.id("studentName"));
+
+            name.clear();
+            name.sendKeys("GangaUpdated");
+
+            driver.findElement(By.id("saveStudent")).click();
+
+            wait.until(
+                ExpectedConditions.visibilityOfElementLocated(updatedRow)
+            );
+
+            System.out.println("PASS: Edit student");
+
+            // DELETE
+            WebElement updated = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(updatedRow)
+            );
+
+            updated.findElement(
+                By.xpath("./td[4]//button[normalize-space()='Delete']")
+            ).click();
+
+            Alert alert = wait.until(
+                ExpectedConditions.alertIsPresent()
+            );
+
+            alert.accept();
+
+            wait.until(
+                ExpectedConditions.invisibilityOfElementLocated(updatedRow)
+            );
+
+            System.out.println("PASS: Delete student");
+            System.out.println("ALL TESTS PASSED");
+
+        } catch (Exception e) {
+            System.out.println("TEST FAILED: " + e.getMessage());
+
+        } finally {
+            driver.quit();
+        }
+    }
+}
+
+cd path\to\student-management\backend
+npm install
+npm start
+
+cd path\to\student-management\frontend
+npx http-server -p 5500
+
+Eclipse — Run Selenium
+1. Open Eclipse.
+2. Open the StudentSeleniumTest Maven project.
+3. Wait for Maven dependencies to finish downloading.
+4. Open StudentSeleniumTest.java.
+5. Right-click → Run As → Java Application.
+6. Watch Chrome perform the test actions automatically.
+7. Show the Console output to your examiner.

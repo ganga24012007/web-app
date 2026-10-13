@@ -12,7 +12,6 @@
 
     <h2>Student Management System</h2>
 
-    <!-- ADD / EDIT FORM -->
     <form ng-submit="saveStudent()">
         <input type="text"
                ng-model="form.name"
@@ -39,7 +38,6 @@
 
     <hr>
 
-    <!-- SEARCH -->
     <input type="text"
            ng-model="search"
            ng-change="loadStudents()"
@@ -49,7 +47,6 @@
         Clear Search
     </button>
 
-    <!-- STUDENT TABLE -->
     <h3>Student List</h3>
 
     <table border="1" cellpadding="8">
@@ -93,7 +90,6 @@
             $scope.search = "";
             $scope.message = "";
 
-            // READ + SEARCH
             $scope.loadStudents = function() {
                 $http.get(API, {
                     params: { search: $scope.search }
@@ -104,7 +100,6 @@
                 });
             };
 
-            // ADD OR UPDATE
             $scope.saveStudent = function() {
                 let request;
 
@@ -127,19 +122,17 @@
                 });
             };
 
-            // LOAD DETAILS INTO FORM FOR EDITING
             $scope.editStudent = function(student) {
                 $scope.form = angular.copy(student);
                 $scope.message = "Editing " + student.name;
             };
 
-            // CANCEL EDITING
             $scope.cancelEdit = function() {
                 $scope.form = {};
                 $scope.message = "";
             };
 
-            // DELETE
+
             $scope.deleteStudent = function(id) {
                 if (confirm("Delete this student?")) {
                     $http.delete(API + "/" + id)
@@ -152,7 +145,6 @@
                 }
             };
 
-            // LOAD DATA WHEN PAGE OPENS
             $scope.loadStudents();
         });
     </script>

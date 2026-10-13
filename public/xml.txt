@@ -90,3 +90,150 @@ table format
         </html>
     </xsl:template>
 </xsl:stylesheet>
+
+xslt
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:template match="/">
+        <html>
+            <body>
+                <h2>Student Details</h2>
+                <table border="1">
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Department</th>
+                    </tr>
+                    <tr>
+                        <td><xsl:value-of select="student/name"/></td>
+                        <td><xsl:value-of select="student/age"/></td>
+                        <td><xsl:value-of select="student/department"/></td>
+                    </tr>
+                </table>
+            </body>
+        </html>
+    </xsl:template>
+</xsl:stylesheet>
+
+dtd another example
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE students SYSTEM "student.dtd">
+<students>
+    <student>
+        <rollno>101</rollno>
+        <name>Sukanya</name>
+        <department>IT</department>
+        <mark>95</mark>
+    </student>
+    <student>
+        <rollno>102</rollno>
+        <name>Priya</name>
+        <department>CSE</department>
+        <mark>90</mark>
+    </student>
+</students>
+
+<!ELEMENT students (student+)>
+<!ELEMENT student (rollno, name, department, mark)>
+<!ELEMENT rollno (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT department (#PCDATA)>
+<!ELEMENT mark (#PCDATA)>
+
+xslt
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="student.xsl"?>
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:template match="/">
+        <html>
+        <head>
+            <title>Student Details</title>
+            <style>
+                body {
+                    font-family: Arial;
+                    background-color: #f0f8ff;
+                    text-align: center;
+                }
+                table {
+                    margin: auto;
+                    border-collapse: collapse;
+                    width: 70%;
+                    background-color: white;
+                }
+
+                th {
+                    background-color: #2874a6;
+                    color: white;
+                }
+
+                th, td {
+                    border: 1px solid black;
+                    padding: 12px;
+                }
+            </style>
+        </head>
+        <body>
+            <h2>Student Details</h2>
+            <table>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Mark</th>
+                </tr>
+                <xsl:for-each select="students/student">
+                    <tr>
+                        <td><xsl:value-of select="rollno"/></td>
+                        <td><xsl:value-of select="name"/></td>
+                        <td><xsl:value-of select="department"/></td>
+                        <td><xsl:value-of select="mark"/></td>
+                    </tr>
+                </xsl:for-each>
+            </table>
+        </body>
+        </html>
+    </xsl:template>
+</xsl:stylesheet>
+
+
+last example
+dtd[[[[[[[[[[[[[[[[
+<!ELEMENT college (collegeName, location, students, courses, description, note)>
+<!ATTLIST college collegeId CDATA #REQUIRED>
+<!ELEMENT collegeName (#PCDATA)>
+<!ELEMENT location EMPTY>
+<!ATTLIST location
+    city CDATA #REQUIRED
+    state CDATA #REQUIRED
+>
+<!ELEMENT students (student+)>
+<!ELEMENT student (name, age, department, email, skills, active)>
+<!ATTLIST student
+    id CDATA #REQUIRED
+    year CDATA #REQUIRED
+>
+<!ELEMENT name (firstName, lastName)>
+<!ELEMENT firstName (#PCDATA)>
+<!ELEMENT lastName (#PCDATA)>
+<!ELEMENT age (#PCDATA)>
+<!ELEMENT department (#PCDATA)>
+<!ELEMENT email (#PCDATA)>
+<!ELEMENT skills (skill+)>
+<!ELEMENT skill (#PCDATA)>
+<!ELEMENT active (#PCDATA)>
+<!ELEMENT courses (course+)>
+<!ELEMENT course (title, credits)>
+<!ATTLIST course code CDATA #REQUIRED>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT credits (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT note (#PCDATA)>
+]]]]]]]]]]]]]]]]
+
+xslt
+
