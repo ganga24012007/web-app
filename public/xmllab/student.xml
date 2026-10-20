@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="student.xsl"?>
+<!DOCTYPE student SYSTEM "student.dtd">
+<student id="S101" year="3">
+    <name>Ganga</name>
+    <rollno>101</rollno>
+    <department>IT</department>
+    <email>ganga@example.com</email>
+
+    <subjects>
+        <subject>XML</subject>
+        <subject>Java</subject>
+    </subjects>
+
+    <payment>
+        <card/>
+    </payment>
+
+    <remarks>
+        Learn <bold>XML DTD</bold> thoroughly.
+    </remarks>
+
+    <emptytag/>
+
+    <extra>
+        <name>Extra information</name>
+    </extra>
+</student>

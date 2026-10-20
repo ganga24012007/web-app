@@ -1,0 +1,34 @@
+<!ELEMENT student (name, rollno, department, email?, subjects, payment, remarks, emptytag, extra)>
+
+<!-- Elements containing text -->
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT rollno (#PCDATA)>
+<!ELEMENT department (#PCDATA)>
+<!ELEMENT email (#PCDATA)>
+
+<!-- One or more subject elements -->
+<!ELEMENT subjects (subject+)>
+<!ELEMENT subject (#PCDATA)>
+
+<!-- Choice: cash OR card -->
+<!ELEMENT payment (cash | card)>
+<!ELEMENT cash EMPTY>
+<!ELEMENT card EMPTY>
+
+<!-- Mixed content: text and bold elements -->
+<!ELEMENT remarks (#PCDATA | bold)*>
+<!ELEMENT bold (#PCDATA)>
+
+<!-- Empty element -->
+<!ELEMENT emptytag EMPTY>
+
+<!-- ANY allows any declared element content -->
+<!ELEMENT extra ANY>
+
+<!-- Attributes -->
+<!ATTLIST student
+    id ID #REQUIRED
+    year CDATA #IMPLIED
+    status (active | inactive) "active"
+    college CDATA #FIXED "TCE"
+>

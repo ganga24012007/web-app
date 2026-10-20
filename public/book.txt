@@ -1,0 +1,246 @@
+index.html
+
+
+<!DOCTYPE html>
+<html ng-app="libraryApp">
+<head>
+    <title>Library Management System</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body>
+
+    <h2>Library Management System</h2>
+
+    <!-- Controller 1: Add Book -->
+    <div ng-controller="TaskGetter">
+
+        <h3>Add Book</h3>
+
+        <form ng-submit="addBook()">
+            Book Name:
+            <input type="text" ng-model="bookname" required>
+
+            Quantity:
+            <input type="number" ng-model="quantity"
+                   min="1" required>
+
+            <button type="submit">Add Book</button>
+        </form>
+
+    </div>
+
+    <hr>
+
+    <!-- Controller 2: Display and Delete Books -->
+    <div ng-controller="TaskLister">
+
+        <h3>Book List</h3>
+
+        Search:
+        <input type="text" ng-model="searchText">
+
+        Sort By:
+        <select ng-model="sortBy">
+            <option value="bookname">Book Name</option>
+            <option value="quantity">Quantity</option>
+        </select>
+
+        <br><br>
+
+        <table border="1" cellpadding="8">
+            <tr>
+                <th>Book Name</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+
+            <tr ng-repeat="b in books | filter:searchText | orderBy:sortBy">
+                <td>{{ b.bookname | uppercase }}</td>
+                <td>{{ b.quantity }}</td>
+                <td>
+                    <button ng-click="deleteBook(b._id)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        </table>
+
+        <p>Total books: {{ books.length }}</p>
+
+    </div>
+
+    <script>
+        // 1. Create AngularJS module
+        var app = angular.module("libraryApp", []);
+
+        // 2. Factory
+        app.factory("BookFactory", function($http) {
+
+            var api = "http://localhost:3000/books";
+
+            var obj = {
+
+                // Get all books
+                getBooks: function() {
+                    return $http.get(api);
+                },
+
+                // Add a book
+                addBook: function(book) {
+                    return $http.post(api, book);
+                },
+
+                // Delete a book
+                deleteBook: function(id) {
+                    return $http.delete(api + "/" + id);
+                }
+            };
+
+            return obj;
+        });
+
+        // 3. Controller for adding books
+        app.controller("TaskGetter", function(
+            $scope, $rootScope, BookFactory
+        ) {
+
+            $scope.addBook = function() {
+
+                var book = {
+                    bookname: $scope.bookname,
+                    quantity: $scope.quantity
+                };
+
+                BookFactory.addBook(book)
+                    .then(function(response) {
+
+                        alert("Book added successfully");
+
+                        $scope.bookname = "";
+                        $scope.quantity = "";
+
+                        $rootScope.$broadcast("booksUpdated");
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                        alert("Could not add book");
+                    });
+            };
+        });
+
+        // 4. Controller for displaying and deleting books
+        app.controller("TaskLister", function($scope, BookFactory) {
+
+            $scope.books = [];
+
+            // Display books
+            $scope.loadBooks = function() {
+
+                BookFactory.getBooks()
+                    .then(function(response) {
+                        $scope.books = response.data;
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            };
+
+            // Delete book
+            $scope.deleteBook = function(id) {
+
+                BookFactory.deleteBook(id)
+                    .then(function() {
+                        $scope.loadBooks();
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                        alert("Could not delete book");
+                    });
+            };
+
+            // Listen for a newly added book
+            $scope.$on("booksUpdated", function() {
+                $scope.loadBooks();
+            });
+
+            // Load books when the page starts
+            $scope.loadBooks();
+        });
+    </script>
+
+</body>
+</html>
+  
+server.js
+
+
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Connect to local MongoDB
+mongoose.connect("mongodb://127.0.0.1:27017/libraryDB")
+    .then(() => console.log("MongoDB Connected"))
+    .catch(err => console.log("MongoDB Error:", err));
+
+// Book schema
+const bookSchema = new mongoose.Schema({
+    bookname: String,
+    quantity: Number
+});
+
+// Book model
+const Book = mongoose.model("Book", bookSchema);
+
+// GET: Display all books
+app.get("/books", async (req, res) => {
+    try {
+        const books = await Book.find();
+        res.json(books);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to retrieve books" });
+    }
+});
+
+// POST: Add a book
+app.post("/books", async (req, res) => {
+    try {
+        const book = new Book({
+            bookname: req.body.bookname,
+            quantity: req.body.quantity
+        });
+
+        await book.save();
+        res.status(201).json(book);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to add book" });
+    }
+});
+
+// DELETE: Delete a book by MongoDB ID
+app.delete("/books/:id", async (req, res) => {
+    try {
+        const book = await Book.findByIdAndDelete(req.params.id);
+
+        if (!book) {
+            return res.status(404).json({ error: "Book not found" });
+        }
+
+        res.json({ message: "Book deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to delete book" });
+    }
+});
+
+// Start backend server
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
+});

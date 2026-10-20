@@ -1,3 +1,12 @@
+running
+npm init -y
+npm install express
+node server.js
+python -m pip install selenium
+python test_app.py
+
+
+
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

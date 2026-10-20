@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Selenium Test App</title>
+</head>
+<body>
+
+    <h2>Student App</h2>
+
+   <input type="text" id="studentName"
+       placeholder="Enter student name">
+
+<button id="addBtn" onclick="addStudent()">
+    Add Student
+</button>
+
+<p id="result"></p>
+
+<script>
+function addStudent() {
+    let name = document.getElementById("studentName").value;
+    document.getElementById("result").innerText =
+        "Student added: " + name;
+}
+</script>
+
+    
+
+</body>
+</html>

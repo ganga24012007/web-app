@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Student Management</title>
-
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 </head>
 
@@ -13,101 +12,72 @@
     <h2>Student Management System</h2>
 
     <form ng-submit="saveStudent()">
-        <input type="text"
-               ng-model="form.name"
-               placeholder="Student Name" required>
-
-        <input type="text"
-               ng-model="form.studentId"
-               placeholder="Student ID" required>
-
-        <input type="text"
-               ng-model="form.dept"
-               placeholder="Department" required>
+        <input ng-model="form.name" placeholder="Name" required>
+        <input ng-model="form.studentId" placeholder="Student ID" required>
+        <input ng-model="form.dept" placeholder="Department" required>
 
         <button type="submit">
-            {{ form._id ? 'Update Student' : 'Add Student' }}
-        </button>
-
-        <button type="button"
-                ng-click="cancelEdit()"
-                ng-if="form._id">
-            Cancel
+            {{form._id ? 'Update Student' : 'Add Student'}}
         </button>
     </form>
 
     <hr>
 
-    <input type="text"
-           ng-model="search"
-           ng-change="loadStudents()"
-           placeholder="Search name, ID or department">
-
-    <button ng-click="search=''; loadStudents()">
-        Clear Search
-    </button>
+    <input ng-model="search" ng-change="loadStudents()"
+           placeholder="Search students">
 
     <h3>Student List</h3>
 
     <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Student ID</th>
-                <th>Department</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+        <tr>
+            <th>Name</th>
+            <th>Student ID</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
 
-        <tbody>
-            <tr ng-repeat="s in students track by s._id">
-                <td>{{ s.name }}</td>
-                <td>{{ s.studentId }}</td>
-                <td>{{ s.dept }}</td>
-                <td>
-                    <button ng-click="editStudent(s)">Edit</button>
-                    <button ng-click="deleteStudent(s._id)">Delete</button>
-                </td>
-            </tr>
+        <tr ng-repeat="s in students track by s._id">
+            <td>{{s.name}}</td>
+            <td>{{s.studentId}}</td>
+            <td>{{s.dept}}</td>
+            <td>
+                <button ng-click="editStudent(s)">Edit</button>
+                <button ng-click="deleteStudent(s._id)">Delete</button>
+            </td>
+        </tr>
 
-            <tr ng-if="students.length === 0">
-                <td colspan="4">No students found</td>
-            </tr>
-        </tbody>
+        <tr ng-if="students.length == 0">
+            <td colspan="4">No students found</td>
+        </tr>
     </table>
 
-    <p>{{ message }}</p>
+    <p>{{message}}</p>
 
     <script>
-        const app = angular.module("studentApp", []);
+        var app = angular.module("studentApp", []);
 
         app.controller("StudentController", function($scope, $http) {
 
-            const API = "/api/students";
+            var API = "/api/students";
 
             $scope.students = [];
             $scope.form = {};
             $scope.search = "";
-            $scope.message = "";
 
+            // View and search students
             $scope.loadStudents = function() {
-                $http.get(API, {
-                    params: { search: $scope.search }
-                }).then(function(response) {
-                    $scope.students = response.data;
-                }).catch(function() {
-                    $scope.message = "Unable to load students";
+                $http.get(API, {params: {search: $scope.search}})
+                .then(function(res) {
+                    $scope.students = res.data;
                 });
             };
 
+            // Add or update student
             $scope.saveStudent = function() {
-                let request;
+                var request;
 
                 if ($scope.form._id) {
-                    request = $http.put(
-                        API + "/" + $scope.form._id,
-                        $scope.form
-                    );
+                    request = $http.put(API + "/" + $scope.form._id, $scope.form);
                 } else {
                     request = $http.post(API, $scope.form);
                 }
@@ -116,31 +86,21 @@
                     $scope.message = "Saved successfully";
                     $scope.form = {};
                     $scope.loadStudents();
-                }).catch(function(error) {
-                    $scope.message =
-                        error.data?.error || "Unable to save student";
                 });
             };
 
-            $scope.editStudent = function(student) {
-                $scope.form = angular.copy(student);
-                $scope.message = "Editing " + student.name;
+            // Select student for editing
+            $scope.editStudent = function(s) {
+                $scope.form = angular.copy(s);
             };
 
-            $scope.cancelEdit = function() {
-                $scope.form = {};
-                $scope.message = "";
-            };
-
-
+            // Delete student
             $scope.deleteStudent = function(id) {
-                if (confirm("Delete this student?")) {
+                if (confirm("Delete student?")) {
                     $http.delete(API + "/" + id)
                     .then(function() {
                         $scope.message = "Deleted successfully";
                         $scope.loadStudents();
-                    }).catch(function() {
-                        $scope.message = "Unable to delete student";
                     });
                 }
             };

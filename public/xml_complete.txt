@@ -144,3 +144,7 @@ xslt- <?xml-stylesheet type="text/xsl" href="college.xsl"?>
     </xsl:template>
 
 </xsl:stylesheet>
+
+
+
+python -m http.server 8000
