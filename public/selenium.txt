@@ -8,41 +8,105 @@ python test_app.py
 
 
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+index.html--------------------------------------------
 
-public class StudentTest {
-    public static void main(String[] args) {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+    <h2>Login Form</h2>
 
-        WebDriver driver = new ChromeDriver();
+    <form id="loginForm">
+        <label>Email:</label>
+        <input type="text" id="email" placeholder="Enter email">
+        <br><br>
 
-        driver.get("http://localhost:3000/students");
+        <label>Password:</label>
+        <input type="password" id="password" placeholder="Enter password">
+        <br><br>
 
-        driver.findElement(By.id("name"))
-              .sendKeys("Ganga");
+        <button type="submit" id="loginBtn">Login</button>
+    </form>
 
-        driver.findElement(By.id("regno"))
-              .sendKeys("101");
+    <p id="message"></p>
 
-        driver.findElement(By.id("dept"))
-              .sendKeys("IT");
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
 
-        driver.findElement(By.id("addBtn"))
-              .click();
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let message = document.getElementById("message");
 
-        String table =
-            driver.findElement(By.id("studentTable"))
-                  .getText();
+            if (email === "" || password === "") {
+                message.textContent = "Please enter email and password";
+            }
+            else if (email === "test@gmail.com" && password === "12345") {
+                message.textContent = "Login successful";
+            }
+            else {
+                message.textContent = "Invalid email or password";
+            }
+        });
+    </script>
+</body>
+</html>
 
-        System.out.println(table);
+server.js-----------------------------------------------------------------------------
 
-        if (table.contains("Ganga")) {
-            System.out.println("Student test passed");
-        } else {
-            System.out.println("Student test failed");
-        }
+const express = require("express");
+const path = require("path");
 
-        driver.quit();
-    }
-}
+const app = express();
+const PORT = 3000;
+
+// Serve index.html
+app.use(express.static(__dirname));
+
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
+
+selenium code--------------------------------------------------------------
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+
+driver = webdriver.Chrome()
+
+driver.get("http://localhost:3000")
+
+# Test 1: Empty fields
+driver.find_element(By.ID, "loginBtn").click()
+time.sleep(1)
+
+message = driver.find_element(By.ID, "message").text
+print("Empty fields:", message)
+
+# Test 2: Invalid login
+driver.find_element(By.ID, "email").send_keys("wrong@gmail.com")
+driver.find_element(By.ID, "password").send_keys("wrong123")
+driver.find_element(By.ID, "loginBtn").click()
+time.sleep(1)
+
+message = driver.find_element(By.ID, "message").text
+print("Invalid login:", message)
+
+# Clear fields
+driver.find_element(By.ID, "email").clear()
+driver.find_element(By.ID, "password").clear()
+
+# Test 3: Valid login
+driver.find_element(By.ID, "email").send_keys("test@gmail.com")
+driver.find_element(By.ID, "password").send_keys("12345")
+driver.find_element(By.ID, "loginBtn").click()
+time.sleep(1)
+
+message = driver.find_element(By.ID, "message").text
+print("Valid login:", message)
+
+driver.quit()
